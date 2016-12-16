@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Прикладная алгебра</string>
+
+    <string name="act_polynomial_divide">Деление полиномов</string>
+    <string name="act_polynomial_inverse">Обратный элемент</string>
+    <string name="act_matrix_inverse">Обратная матрица</string>
+    <string name="act_decompose_irreductible">Разложить на неприводимые</string>
+    <string name="act_find_roots">Перебор корней</string>
+</resources>
