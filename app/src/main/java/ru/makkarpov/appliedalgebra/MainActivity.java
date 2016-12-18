@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static final SubAction[] subActions = {
-        new SubAction(R.string.act_polynomial_divide, PolynomialDivide.class),
-        new SubAction(R.string.act_polynomial_inverse, PolynomialInverse.class),
+        new SubAction(R.string.act_simple_operations, SimpleOperations.class),
         new SubAction(R.string.act_matrix_inverse, MatrixInverse.class),
         new SubAction(R.string.act_decompose_irreductible, DecomposeIrreductible.class),
-        new SubAction(R.string.act_find_roots, FindRoots.class)
+        new SubAction(R.string.act_find_roots, FindRoots.class),
+        new SubAction(R.string.act_element_order, ElementOrder.class)
     };
 
     @Override

@@ -16,20 +16,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".actions.PolynomialDivide"
-            android:label="@string/act_polynomial_divide">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".actions.PolynomialInverse"
-            android:label="@string/act_polynomial_inverse">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".actions.MatrixInverse"
             android:label="@string/act_matrix_inverse">
             <meta-data
@@ -43,8 +29,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".actions.FindRoots"
+        <activity
+            android:name=".actions.FindRoots"
             android:label="@string/act_find_roots">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".actions.ElementOrder"
+            android:label="@string/act_element_order">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".actions.SimpleOperations"
+            android:label="@string/act_simple_operations">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

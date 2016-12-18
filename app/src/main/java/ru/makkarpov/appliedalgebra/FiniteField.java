@@ -181,6 +181,18 @@ public class FiniteField {
         return r;
     }
 
+    public Polynomial evaluate(Polynomial a, Polynomial x) {
+        Polynomial r = Polynomial.ZERO;
+
+        Polynomial px = Polynomial.ONE;
+        for (int i = 0; i <= a.highestPower(); i++) {
+            r = add(r, multiply(px, a.coefficient(i)));
+            px = multiply(px, x);
+        }
+
+        return r;
+    }
+
     public List<Polynomial> listIrreductibles(int highestPower) {
         ArrayList<Polynomial> ret = new ArrayList<>();
 
