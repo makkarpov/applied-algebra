@@ -1,5 +1,7 @@
 package ru.makkarpov.appliedalgebra.actions;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +21,6 @@ import ru.makkarpov.appliedalgebra.Polynomial;
 import ru.makkarpov.appliedalgebra.R;
 
 public class DecomposeIrreductible extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,65 +39,94 @@ public class DecomposeIrreductible extends AppCompatActivity {
     }
 
     private void calculate() {
-        FiniteField ff = FiniteField.parse((EditText) findViewById(R.id.fieldOrder));
+        final FiniteField ff = FiniteField.parse((EditText) findViewById(R.id.fieldOrder));
+        final Polynomial input = Polynomial.parse((EditText) findViewById(R.id.input1), ff);
 
-        HashMap<Polynomial, Integer> decompositions = new HashMap<>();
-        Polynomial input = Polynomial.parse((EditText) findViewById(R.id.input1), ff);
-        List<Polynomial> irreductibles = ff.listIrreductibles(input.highestPower());
+        final ProgressDialog dialog =
+                ProgressDialog.show(this, "Вычисление...", "Генерация неприводимых многочленов...", true);
 
-        StringBuilder log = new StringBuilder();
+        AsyncTask<Void, Object, String> task = new AsyncTask<Void, Object, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                StringBuilder log = new StringBuilder();
 
-        log.append("f(x) = ").append(input).append("\n");
+                List<Polynomial> irreductibles = ff.listIrreductibles(input.highestPower());
+                log.append("Неприводимых многочленов: ").append(irreductibles.size()).append("\n");
+                publishProgress("Разложение...");
 
-        while (true) {
-            boolean irreductible = true;
+                HashMap<Polynomial, Integer> decompositions = new HashMap<>();
+                Polynomial buf = input;
 
-            for (Polynomial p: irreductibles) {
-                Polynomial[] div = ff.divide(input, p);
+                log.append("f(x) = ").append(buf).append("\n");
 
-                if (div[1].equals(Polynomial.ZERO)) {
-                    log.append("f(x) / (").append(p).append(") = ").append(div[0]).append("\n\n");
-                    log.append("f(x) = ").append(div[0]).append("\n");
+                while (true) {
+                    boolean irreductible = true;
 
-                    Integer i = decompositions.get(p);
+                    for (Polynomial p: irreductibles) {
+                        Polynomial[] div = ff.divide(buf, p);
 
-                    if (i == null)
-                        i = 0;
+                        if (div[1].equals(Polynomial.ZERO)) {
+                            log.append("f(x) / (").append(p).append(") = ").append(div[0]).append("\n\n");
+                            log.append("f(x) = ").append(div[0]).append("\n");
 
-                    decompositions.put(p, i + 1);
-                    input = div[0];
-                    irreductible = false;
-                    break;
+                            Integer i = decompositions.get(p);
+
+                            if (i == null)
+                                i = 0;
+
+                            decompositions.put(p, i + 1);
+                            buf = div[0];
+                            irreductible = false;
+                            break;
+                        }
+                    }
+
+                    if (irreductible) {
+                        break;
+                    }
+                }
+
+                log.append("Многочлен неприводим. Итоговое разложение:\n");
+
+                for (Map.Entry<Polynomial, Integer> e: decompositions.entrySet()) {
+                    if (e.getKey().highestPower() > 0) {
+                        log.append("(").append(e.getKey()).append(")");
+                    } else {
+                        log.append(e.getKey());
+                    }
+
+                    if (e.getValue() > 1) {
+                        log.append("^").append(e.getValue());
+                    }
+                }
+
+                if (buf.highestPower() > 0) {
+                    log.append("(").append(buf).append(")");
+                } else {
+                    log.append(buf);
+                }
+
+                log.append("\n");
+
+                return log.toString();
+            }
+
+            @Override
+            protected void onProgressUpdate(Object... values) {
+                for (Object v: values) {
+                    if (v instanceof String) {
+                        dialog.setMessage((String) v);
+                    }
                 }
             }
 
-            if (irreductible) {
-                break;
+            @Override
+            protected void onPostExecute(String s) {
+                dialog.hide();
+                ((TextView) findViewById(R.id.result)).setText(s);
             }
-        }
+        };
 
-        log.append("Многочлен неприводим. Итоговое разложение:\n");
-
-        for (Map.Entry<Polynomial, Integer> e: decompositions.entrySet()) {
-            if (e.getKey().highestPower() > 0) {
-                log.append("(").append(e.getKey()).append(")");
-            } else {
-                log.append(e.getKey());
-            }
-
-            if (e.getValue() > 1) {
-                log.append("^").append(e.getValue());
-            }
-        }
-
-        if (input.highestPower() > 0) {
-            log.append("(").append(input).append(")");
-        } else {
-            log.append(input);
-        }
-
-        log.append("\n");
-
-        ((TextView) findViewById(R.id.result)).setText(log.toString());
+        task.execute();
     }
 }
